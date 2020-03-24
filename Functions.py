@@ -8,7 +8,7 @@ This is a module that only contains functions and is intended for use in group 2
 def ambiguous_aa(seq):
     """
     A function that looks for ambiguous amino acids.
-    The ambiguous amino acids include, without the quotes, the following: "B", "Z", "X", "J", "O", "U", "R", ".", "*"
+    The ambiguous amino acids include, without the quotes, the following: "B", "Z", "X", "J", "O", "U", ".", "*"
 
     :parameter
     seq : string
@@ -31,8 +31,6 @@ def ambiguous_aa(seq):
     elif(seq.find("O") != -1):
         return False
     elif (seq.find("U") != -1):
-        return False
-    elif(seq.find("R") != -1):
         return False
     elif(seq.find(".") != -1):
         return False

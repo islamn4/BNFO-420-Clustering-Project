@@ -14,4 +14,3 @@ filtered_fasta_files/filtered_Human_M2_allsubtypes_FluDB.fasta.fasta
 filtered_fasta_files/filtered_Human_NA_allsubtypes_NCBI.fasta.fasta
 filtered_fasta_files/filtered_Human_PB2_allsubtypes_FluDB.fasta.fasta
 test_files/_garbage_sequences.fasta
-.DS_Store

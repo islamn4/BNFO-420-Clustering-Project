@@ -4,13 +4,5 @@
 .idea/misc.xml
 .idea/modules.xml
 .idea/vcs.xml
-filtered_fasta_files/all_filtered_sequences.fasta
-filtered_fasta_files/filtered_Avian_HA_allsubtypes_NCBI.fasta
-filtered_fasta_files/filtered_Avian_M2_allsubtypes_FluDB.fasta
-filtered_fasta_files/filtered_Avian_NA_allsubtypes_NCBI.fasta
-filtered_fasta_files/filtered_Avian_PB2_allsubtypes_FluDB.fasta
-filtered_fasta_files/filtered_Human_HA_allsubtypes_NCBI.fasta
-filtered_fasta_files/filtered_Human_M2_allsubtypes_FluDB.fasta
-filtered_fasta_files/filtered_Human_NA_allsubtypes_NCBI.fasta
-filtered_fasta_files/filtered_Human_PB2_allsubtypes_FluDB.fasta
-test_files/_garbage_sequences.fasta
+filtered_fasta_files
+test_files

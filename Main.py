@@ -2,13 +2,19 @@
 3/25
     Currently, this code removes duplicate strains, sequences with ambiguous amino acids, and all strains that are not H5N1.
 To-Do:
+    *) The
     1) Counter for each location
     2) Check for duplicate sequences using the strain's accession number
     3) Continue Testing the code! (minimal testing has been conducted so far)
+    4) Create a different file for each subtype
+    5) Make sure duplicates that are on two different input files will still be caught and removed.
+    6) Place strains with questionable subtypes(ex: H9) into a dedicated file so the strains can be reviewed by hand.
+    7)
 """
 import os
 from Bio import SeqIO
 import Functions as fun
+
 
 directory = os.fsencode("not_filtered_fasta_files")
 garbage_file = open("test_files/_garbage_sequences.fasta", "w+")
@@ -41,7 +47,7 @@ for file in os.listdir(directory):
 
         for record in SeqIO.parse("not_filtered_fasta_files/" + str(filename), "fasta"):
             counter_total_strains += 1
-            if(fun.ambiguous_aa(str(record.seq)) and not(str(record.seq) in non_ambiguous_seq_list) and fun.H5N1_subtype_check(str(record.description))):
+            if(fun.ambiguous_aa(str(record.seq)) and not(str(record.seq) in non_ambiguous_seq_list) and (fun.subtype_filter(str(record.description)) != "none")):
                 non_ambiguous_seq_list.append(str(record.seq))
                 output_handle.write(str(record.__format__("fasta")) + "\n")
                 output_file.write(str(record.__format__("fasta")) + "\n")

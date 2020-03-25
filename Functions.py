@@ -60,7 +60,7 @@ def H5N1_subtype_check(strain_header):
 
 def subtype_filter(strain_header):
     """
-        
+
     """
 
     if(strain_header.find("H5N1") != -1):

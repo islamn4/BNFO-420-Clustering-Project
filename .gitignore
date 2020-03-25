@@ -1,4 +1,4 @@
-
+.DS_Store
 .idea/BNFO-420-Clustering-Project.iml
 .idea/inspectionProfiles/profiles_settings.xml
 .idea/misc.xml
@@ -16,6 +16,5 @@ filtered_fasta_files/filtered_Human_NA_allsubtypes_NCBI.fasta
 filtered_fasta_files/filtered_Human_PB2_allsubtypes_FluDB.fasta
 test_files/_garbage_sequences.fasta
 
-.DS_Store
 #Ignore all .pyc files
-*.pyc
+__pycache__/*.pyc

@@ -36,7 +36,7 @@ counter_swine = 0
 for file in os.listdir(directory):
     filename = os.fsdecode(file)
     if filename.endswith(".fasta") or filename.endswith(".fa"):
-        output_handle = open("filtered_fasta_files/filtered_" + str(filename) + ".fasta", "w+")
+        output_handle = open("filtered_fasta_files/filtered_" + str(filename), "w+")
 
         if(str(filename).upper().find("HUMAN") != -1):
             human_strain = True

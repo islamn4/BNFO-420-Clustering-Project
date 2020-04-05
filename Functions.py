@@ -1,8 +1,54 @@
-#Authour: Stephen Shea
+#Author: Stephen Shea
 #Created: 3/4/20
 """
 This is a module that only contains functions and is intended for use in group 2's BNFO420 research project
 """
+
+def calc_rscu_value(amino_acid, codon, codon_freq, num_codons):
+    """
+    A function that calculates the Relative Synonymous Codon Usage value for the provided amino acid and codon.
+
+    :param amino_acid: string
+        Contains the single letter abreviation of the amino acid in question.
+    :param codon: string
+        Contains the codon in question.
+    :param codon_freq: int
+        Contains the number of times the provided amino acid is encoded by the provided codon for the sequence in question.
+    :param num_codons: int
+        Contains the number of codons that code for the provided amino acid.
+    :return: float
+        Relative Synonymous Codon Usage value, which is a decimial number betweein 0 and 1
+    """
+
+    def clac_rscu_summation(num_codons, codon_freq):
+        """
+        A function that calculates the summation in the RSCU value equation.
+
+        :param num_codons: int
+            Contains the number of codons that code for the provided amino acid.
+        :param codon_freq: int
+            Contains the number of times the provided amino acid is encoded by the provided codon for the sequence in question.
+        :return: int
+            The denominator in the RSCU value equation.
+        """
+
+
+    summation = [clac_rscu_summation(num_codons, codon_freq) for j in range(1, num_codons+1)].sum()
+
+    rscu = codon_freq /((1/num_codons)*summation)
+    return rscu
+
+# def clac_rscu_summation(num_codons, codon_freq):
+#     """
+#     A function that calculates the summation in the RSCU value equation.
+#
+#     :param num_codons: int
+#         Contains the number of codons that code for the provided amino acid.
+#     :param codon_freq: int
+#         Contains the number of times the provided amino acid is encoded by the provided codon for the sequence in question.
+#     :return: int
+#         The denominator in the RSCU value equation.
+#     """
 
 
 def ambiguous_aa(seq):

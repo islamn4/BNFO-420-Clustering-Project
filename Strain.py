@@ -1,8 +1,16 @@
-class Strain:
+class Strain(object):
     import NCBI_Fasta_Functions as ncbi
     """
         A class that creates an object for an Influenza-A virus strain.
     """
+
+    EMPTY_CODON_DICT = {"UUU":0, "UUC":0, "UUA":0, "UUG":0, "CUU":0, "CUC":0, "CUA":0, "CUG":0, "AUU":0, "AUC":0,
+                        "AUA":0, "AUG":0, "GUU":0, "GUC":0, "GUA":0, "GUG":0, "UCU":0, "UCC":0, "UCA":0, "UCG":0,
+                        "CCU":0, "CCC":0, "CCA":0, "CCG":0, "ACU":0, "ACC":0, "ACA":0, "ACG":0, "GCU":0, "GCC":0,
+                        "GCA":0, "GCG":0, "UAU":0, "UAC":0, "UAA":0, "UAG":0, "CAU":0, "CAC":0, "CAA":0, "CAG":0,
+                        "AAU":0, "AAC":0, "AAA":0, "AAG":0, "GAU":0, "GAC":0, "GAA":0, "GAG":0, "UGU":0, "UGC":0,
+                        "UGA":0, "UGG":0, "CGU":0, "CGC":0, "CGA":0, "CGG":0, "AGU":0, "AGC":0, "AGA":0, "AGG":0,
+                        "GGU":0, "GGC":0, "GGA":0, "GGG":0}
 
     CODON_DICT = {"UUU":"F", "UUC":"F", "UUA":"L", "UUG":"L", "CUU":"L", "CUC":"L", "CUA":"L", "CUG":"L", "AUU":"I",
                   "AUC":"I", "AUA":"I", "AUG":"M", "GUU":"V", "GUC":"V", "GUA":"V", "GUG":"V", "UCU":"S", "UCC":"S",
@@ -20,7 +28,7 @@ class Strain:
                "C":[2,"UGU","UGC"], "W":[1,"UGG"], "R":[6,"CGU","CGC","CGA","CGG","AGA","AGG"], "G":[4,"GGU","GGC","GGA","GGG"],
                "stop":[3,"UAA","UAG","UGA"]}
 
-    #Constructor method
+    # Constructor method
     def __init__(self, gene, subtype, host, country, year, accession_num, seq):
         self.set_gene(gene)
         self.set_subtype(subtype)
@@ -32,102 +40,229 @@ class Strain:
         self.set_length()
         self.set_codon_matrix()
 
-
-    """
-    # Constructor method
-    def __init__(self, header, seq, host, filename):
-        self.set_gene(gene)
-        self.set_subtype(self.ncbi.parse_subtype(header))
-        self.set_host(host)
-        self.set_country(self.ncbi.parse_country(header))
-        self.set_year(self.ncbi.parse_year(header))
-        self.set_accession_num(self.ncbi.parse_id_num(header))
-        self.set_seq(seq)
-        self.set_length()
-        self.set_codon_matrix()
-    """
-    def __str__(self):
-        return self.accession_num
-
-    def __calc_rscu_summation__(self,amino_acid, codon_matrix):
+    def __calc_rscu_summation__(cls, amino_acid, codon_matrix):
         """
-        A function that calculates the summation in the RSCU value equation.
+        A class method that calculates the summation in the RSCU value equation.
 
-        :param num_codons: int
-            Contains the number of codons that code for the provided amino acid.
-        :param codon_freq: int
-            Contains the number of times the provided amino acid is encoded by the provided codon
-            for the sequence in question.
+        :param amino_acid: string
+            Contains the single letter amino acid abrreviation for a specific codon
+        :param codon_matrix:
         :return: int
             The denominator in the RSCU value equation.
         """
         summation = 0
-        for i in self.AA_DICT[amino_acid]:
+        for i in cls.AA_DICT[amino_acid]:
             if isinstance(i, int):
                 continue
             else:
-                print(i)
                 summation = summation + codon_matrix[i]
         return summation
 
-    def calc_rscu_value(self, codon_matrix = {}):
+    def calc_rscu_value(cls, codon_matrix = {}):
         """
-
+            A class method that calculates the RSCU values of a given codon matrix
         :param codon_matrix:
         :return: dict
 
         """
         return_codon_matrix = {}
-        for k,v in self.CODON_DICT.items():
+        temp_codon_dict = cls.CODON_DICT.copy()
+        temp_codon_dict.pop("UAA")
+        temp_codon_dict.pop("UAG")
+        temp_codon_dict.pop("UGA")
+        temp_codon_dict.pop("AUG")
+        temp_codon_dict.pop("UGG")
+        temp_aa_dict = cls.AA_DICT.copy()
+        temp_aa_dict.pop("stop")
+        temp_aa_dict.pop("W")
+        temp_aa_dict.pop("M")
+        for k,v in temp_codon_dict.items():
             amino_acid = v
-            num_codons = self.AA_DICT[v][0]
+            num_codons = temp_aa_dict[v][0]
             codon_freq = codon_matrix[k]
-            summation = self.__calc_rscu_summation__(amino_acid, codon_matrix)
-            rscu = codon_freq / ((1 / num_codons) * summation)
+            summation = cls.__calc_rscu_summation__(amino_acid, codon_matrix)
+            # if num_codons == 0:
+            #     print("num_codons")
+            # if summation == 0:
+            #     print("summation")
+            rscu = 0
+            if num_codons != 0 and summation != 0:
+                rscu = codon_freq / ((1 / num_codons) * summation)
             rscu = "{:.2f}".format(rscu)
             return_codon_matrix.update({k + "(" + v + ")":[codon_matrix[k], rscu]})
         return return_codon_matrix
 
-    # def translate_dna_to_mrna(self, seq):
-    #     """
-    #
-    #     :param seq:
-    #     :return:
-    #     """
-    #     translated_seq = ""
-    #     for char in seq:
-    #         if char == "T":
-    #             translated_seq = "A" + translated_seq
-    #         elif char == "A":
-    #             translated_seq = "U" + translated_seq
-    #         elif char == "C":
-    #             translated_seq = "G" + translated_seq
-    #         elif char == "G":
-    #             translated_seq = "C" + translated_seq
-    #         else:
-    #             print(char + " is an ambiguous nucleotide and cannot be translated.")
-    #
-    #     return translated_seq
-    #
-    # def translate_mrna_to_dna(self, seq):
-    #     """
-    #
-    #     :param seq:
-    #     :return:
-    #     """
-    #     translated_seq = ""
-    #     for char in seq:
-    #         if char == "U":
-    #             translated_seq = "A" + translated_seq
-    #         elif char == "A":
-    #             translated_seq = "T" + translated_seq
-    #         elif char == "G":
-    #             translated_seq = "C" + translated_seq
-    #         elif char == "C":
-    #             translated_seq = "G" + translated_seq
-    #         else:
-    #             print(char + " is an ambiguous nucleotide and cannot be translated.")
-    #     return translated_seq
+    def sum_codon_matrix(self, matrix_list, total_strains):
+        new_codon_matrix_list = []
+        avian_ha_list = [["Avian_HA_H5N1"], ["Avian_HA_H7N9"]]
+        avian_mp_list = [["Avian_MP_H5N1"], ["Avian_MP_H7N9"]]
+        avian_na_list = [["Avian_NA_H5N1"], ["Avian_NA_H7N9"]]
+        avian_pb2_list = [["Avian_PB2_H5N1"], ["Avian_PB2_H7N9"]]
+        human_ha_list = [["Human_HA_H5N1"], ["Human_HA_H7N9"]]
+        human_mp_list = [["Human_MP_H5N1"], ["Human_MP_H7N9"]]
+        human_na_list = [["Human_NA_H5N1"], ["Human_NA_H7N9"]]
+        human_pb2_list = [["Human_PB2_H5N1"], ["Human_PB2_H7N9"]]
+
+        #Adds each strain objects to one of the eight lists above. Based on the host, gene, and subtype of the strain
+        for i in matrix_list:
+            # print(i.get_subtype() + "_" + i.get_host() + "_" + i.get_gene())
+            if ((i.get_subtype() + "_" + i.get_host() + "_" + i.get_gene()) == "H5N1_Avian_HA"):
+                avian_ha_list[0].append(i)
+                total_strains -= 1
+            elif ((i.get_subtype() + "_" + i.get_host() + "_" + i.get_gene()) == "H5N1_Avian_MP"):
+                avian_mp_list[0].append(i)
+                total_strains -= 1
+            elif ((i.get_subtype() + "_" + i.get_host() + "_" + i.get_gene()) == "H5N1_Avian_NA"):
+                avian_na_list[0].append(i)
+                total_strains -= 1
+            elif ((i.get_subtype() + "_" + i.get_host() + "_" + i.get_gene()) == "H5N1_Avian_PB2"):
+                avian_pb2_list[0].append(i)
+                total_strains -= 1
+            elif ((i.get_subtype() + "_" + i.get_host() + "_" + i.get_gene()) == "H5N1_Human_HA"):
+                human_ha_list[0].append(i)
+                total_strains -= 1
+            elif ((i.get_subtype() + "_" + i.get_host() + "_" + i.get_gene()) == "H5N1_Human_MP"):
+                human_mp_list[0].append(i)
+                total_strains -= 1
+            elif ((i.get_subtype() + "_" + i.get_host() + "_" + i.get_gene()) == "H5N1_Human_NA"):
+                human_na_list[0].append(i)
+                total_strains -= 1
+            elif ((i.get_subtype() + "_" + i.get_host() + "_" + i.get_gene()) == "H5N1_Human_PB2"):
+                human_pb2_list[0].append(i)
+                total_strains -= 1
+            elif ((i.get_subtype() + "_" + i.get_host() + "_" + i.get_gene()) == "H7N9_Avian_HA"):
+                avian_ha_list[1].append(i)
+                total_strains -= 1
+            elif ((i.get_subtype() + "_" + i.get_host() + "_" + i.get_gene()) == "H7N9_Avian_MP"):
+                avian_mp_list[1].append(i)
+                total_strains -= 1
+            elif ((i.get_subtype() + "_" + i.get_host() + "_" + i.get_gene()) == "H7N9_Avian_NA"):
+                avian_na_list[1].append(i)
+                total_strains -= 1
+            elif ((i.get_subtype() + "_" + i.get_host() + "_" + i.get_gene()) == "H7N9_Avian_PB2"):
+                avian_pb2_list[1].append(i)
+                total_strains -= 1
+            elif ((i.get_subtype() + "_" + i.get_host() + "_" + i.get_gene()) == "H7N9_Human_HA"):
+                human_ha_list[1].append(i)
+                total_strains -= 1
+            elif ((i.get_subtype() + "_" + i.get_host() + "_" + i.get_gene()) == "H7N9_Human_MP"):
+                human_mp_list[1].append(i)
+                total_strains -= 1
+            elif ((i.get_subtype() + "_" + i.get_host() + "_" + i.get_gene()) == "H7N9_Human_NA"):
+                human_na_list[1].append(i)
+                total_strains -= 1
+            elif ((i.get_subtype() + "_" + i.get_host() + "_" + i.get_gene()) == "H7N9_Human_PB2"):
+                human_pb2_list[1].append(i)
+                total_strains -= 1
+            # else: print(i.get_subtype() + "_" + i.get_host() + "_" + i.get_gene() + " was not summed.")
+        temp_strain_list = [avian_ha_list, avian_mp_list, avian_na_list, avian_pb2_list, human_ha_list, human_mp_list,
+                            human_na_list, human_pb2_list]
+        for i in temp_strain_list:
+            counter = 0
+            h5n1_codon_matrix = self.EMPTY_CODON_DICT.copy()
+            h7n9_codon_matrix = self.EMPTY_CODON_DICT.copy()
+            for h5n1 in i[0]:
+                if isinstance(h5n1, str):
+                    pass
+                else:
+                    for k in self.CODON_DICT.keys():
+                        h5n1_codon_matrix[k] += h5n1.get_codon_matrix()[k]
+                counter += 1
+            counter = 0
+            for h7n9 in i[1]:
+                if isinstance(h7n9, str):
+                    pass
+                else:
+                    for k in self.CODON_DICT.keys():
+                        h7n9_codon_matrix[k] += h7n9.get_codon_matrix()[k]
+                counter += 1
+
+            h5n1_codon_matrix.pop("UAA")
+            h7n9_codon_matrix.pop("UAA")
+
+            h5n1_codon_matrix.pop("UAG")
+            h7n9_codon_matrix.pop("UAG")
+
+            h5n1_codon_matrix.pop("UGA")
+            h7n9_codon_matrix.pop("UGA")
+
+            h5n1_codon_matrix.pop("AUG")
+            h7n9_codon_matrix.pop("AUG")
+
+            h5n1_codon_matrix.pop("UGG")
+            h7n9_codon_matrix.pop("UGG")
+
+            i[0] = [i[0][0]]
+            i[1] = [i[1][0]]
+            i[0].append(h5n1_codon_matrix)
+            i[1].append(h7n9_codon_matrix)
+            new_codon_matrix_list.append(i[0])
+            new_codon_matrix_list.append(i[1])
+
+        # for i in new_codon_matrix_list:
+        #     print()
+        #     print(i)
+
+        return new_codon_matrix_list
+
+    def sum_codon_matrix_temp(self, strain_list, filename_list, total_strains = 0):
+        matrix_list = []
+        for i in range(0, len(strain_list), 1):
+            temp_matrix = self.EMPTY_CODON_DICT.copy()
+            for j in strain_list[i].get(filename_list[i]):
+                for k in self.EMPTY_CODON_DICT.keys():
+                    temp_matrix[k] += j.get_codon_matrix()[k]
+            temp_matrix.pop("UAA")
+            temp_matrix.pop("UAG")
+            temp_matrix.pop("UGA")
+            temp_matrix.pop("AUG")
+            temp_matrix.pop("UGG")
+            matrix_list.append(temp_matrix)
+        # print()
+        # print(matrix_list)
+        return matrix_list
+
+    def translate_dna_to_mrna(clss, seq):
+        """
+
+        :param seq:
+        :return:
+        """
+        translated_seq = ""
+        for char in seq:
+            if char == "T":
+                translated_seq = "A" + translated_seq
+            elif char == "A":
+                translated_seq = "U" + translated_seq
+            elif char == "C":
+                translated_seq = "G" + translated_seq
+            elif char == "G":
+                translated_seq = "C" + translated_seq
+            else:
+                print(char + " is an ambiguous nucleotide and cannot be translated.")
+
+        return translated_seq
+
+    def translate_mrna_to_dna(clss, seq):
+        """
+
+        :param seq:
+        :return:
+        """
+        translated_seq = ""
+        for char in seq:
+            if char == "U":
+                translated_seq = "A" + translated_seq
+            elif char == "A":
+                translated_seq = "T" + translated_seq
+            elif char == "G":
+                translated_seq = "C" + translated_seq
+            elif char == "C":
+                translated_seq = "G" + translated_seq
+            else:
+                print(char + " is an ambiguous nucleotide and cannot be translated.")
+        return translated_seq
+
 
     def get_gene(self):
         """
@@ -201,6 +336,13 @@ class Strain:
         """
         return self.CODON_DICT
 
+    def get_aa_dict(self):
+        """
+
+        :return:
+        """
+        return self.AA_DICT
+
 
 
     def set_gene(self, gene):
@@ -271,10 +413,22 @@ class Strain:
             Nothing
         """
         seq = seq.upper().strip().replace("\n","")
+        index = 0
         if self.ncbi.check_dna(seq):
+            seq = seq[seq.find("ATG"):]
+            for i in range(0, len(seq) + 1, 3):
+                index += 3
+                codon = seq[i:i + 3]
+                if codon == "TAA":
+                    seq = seq[:index]
+                elif codon == "TAG":
+                    seq = seq[:index]
+                elif codon == "TGA":
+                    seq = seq[:index]
+                else: pass
             self.seq = seq
         else: print("The given sequence has ambiguous neucleotides or it is not a DNA sequence. "
-                    "Please use a DNA or mRNA sequence")
+                    "Please use a DNA sequence")
 
     def set_length(self):
         """
@@ -291,23 +445,19 @@ class Strain:
         """
 
         seq = self.get_seq()
-        # seq = seq[seq.find("ATG"):]
         seq = seq.replace("T", "U")
         codon_matrix = {}
         #
         for k in self.CODON_DICT.keys():
             codon_matrix.update({k: 0})
-        # Iterates through the codons
+        # Iterates through the codons and counts the number of times each codon appears.
         for i in range(0, self.length + 1, 3):
             codon = seq[i:i+3]
             if(len(codon) == 3):
                 if(codon_matrix.get(codon) == None):
                     print(codon + " does not exist in the codon matrix")
-                    # pass
                 else:
-                    # print(codon_matrix.get(codon))
                     codon_matrix[codon] += 1
-            # else: print(codon)
         self.codon_matrix = codon_matrix
 
 
@@ -315,15 +465,23 @@ class Strain:
 
 
 def main():
+    import csv
     test_file = open("test_files/HA_rscu_value_test_sequence.fasta", "r")
     seq = test_file.read()
     seq = seq[seq.find("\n"):].strip().replace("\n", "")
 
-    test = Strain(None, None, None, None, None, None, seq)
+    test = Strain("HA" , "H5N1", "Avian", None, None, None, seq)
 
-
-    print(test.calc_rscu_value(test.get_codon_matrix()))
-
+    # test.sum_codon_matrix([0])
+    # print(test.calc_rscu_value(test.get_codon_matrix()))
+    # print(len(test.get_seq()))
+    temp_list = [["Codon", "Count", "RSCU"]]
+    rscu = test.calc_rscu_value(test.get_codon_matrix())
+    for k, v in rscu.items():
+        temp_list.append([k, v[0], v[1]])
+    with open('results.csv', 'w+') as f:
+        writer = csv.writer(f)
+        writer.writerows(temp_list)
 
 if __name__ == "__main__":
     main()

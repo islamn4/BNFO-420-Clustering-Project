@@ -31,25 +31,9 @@ def calc_rscu_value(amino_acid, codon, codon_freq, num_codons):
         :return: int
             The denominator in the RSCU value equation.
         """
-
-
     summation = [clac_rscu_summation(num_codons, codon_freq) for j in range(1, num_codons+1)].sum()
-
     rscu = codon_freq /((1/num_codons)*summation)
     return rscu
-
-# def clac_rscu_summation(num_codons, codon_freq):
-#     """
-#     A function that calculates the summation in the RSCU value equation.
-#
-#     :param num_codons: int
-#         Contains the number of codons that code for the provided amino acid.
-#     :param codon_freq: int
-#         Contains the number of times the provided amino acid is encoded by the provided codon for the sequence in question.
-#     :return: int
-#         The denominator in the RSCU value equation.
-#     """
-
 
 def ambiguous_aa(seq):
     """
@@ -138,6 +122,10 @@ def subtype_filter(strain_header):
 
 
 
+# def organize_filenames(file_list):
+#     file_list = []
+#     file_list.i
+#     for file in file_list:
 
 
 

@@ -5,6 +5,7 @@
 """
 import re
 
+
 def check_ambiguous_bases(seq):
     """
     A function that looks for ambiguous nucleotides.
@@ -24,6 +25,7 @@ def check_ambiguous_bases(seq):
         return False
     else:
         return True
+
 
 def check_ambiguous_aa(seq):
     """
@@ -59,6 +61,7 @@ def check_ambiguous_aa(seq):
     else:
         return False
 
+
 def check_mrna(seq):
     """
     Function that checks if the given sequence is an mRNA sequence.
@@ -73,6 +76,7 @@ def check_mrna(seq):
         return True
     else:
         return False
+
 
 def check_dna(seq):
     """
@@ -89,6 +93,7 @@ def check_dna(seq):
     else:
         return False
 
+
 def parse_id_num(header):
     """
     Returns the accession number from the header
@@ -100,8 +105,8 @@ def parse_id_num(header):
     if(header.find(">") == 0):
         header = header[1:]
     id_num = header[:header.find(" ") + 1]
-
     return id_num
+
 
 def parse_subtype(header):
     """
@@ -112,12 +117,10 @@ def parse_subtype(header):
     subtype = re.search("[hH]\d[nN]\d", header)
     if subtype != None:
         return subtype.group(0)
-    else: return subtype
+    else:
+        # print("No Subtype")
+        return subtype
 
-# def parse_host(header, filename = False):
-#     if filename:
-#
-#     else:
 
 def parse_year(header):
     """
@@ -134,7 +137,30 @@ def parse_year(header):
         # print(year)
     return year
 
-#Needs more testing
+def parse_host(header):
+    """
+
+    :param header: string
+        The fasta header of the virus sequence
+    :return: string
+        The host of the virus.
+    """
+    host = ""
+    if header.find("|Host:") != -1:
+        host = header[header.find("|Host:"):].replace("\n", "").strip()
+        host = host[6:]
+    elif header.upper().find("HUMAN") != -1:
+        host = "Human"
+    elif header.upper().find("AVIAN") != -1:
+        host = "Avian"
+    elif header.upper().find("SWINE") != -1:
+        host = "Swine"
+    else: print("No host found.")
+
+    return host
+
+
+# Needs more testing
 def parse_country(header):
     """
 
@@ -149,8 +175,9 @@ def parse_country(header):
         # print(country)
     return(country)
 
-#Does not work yet
-def get_gene(header):
+
+# Does not work yet
+def parse_gene(header):
     gene = "none"
     ha = re.search("[(][H][A][)]", header)
     # if(ha == None):
